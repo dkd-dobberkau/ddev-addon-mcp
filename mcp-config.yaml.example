@@ -1,0 +1,10 @@
+# ddev-addon-mcp configuration
+# Enable/disable tool-packs for additional services.
+# Packs are only loaded if the service is actually running.
+toolpacks:
+  redis: false
+  solr: false
+  mailhog: false
+
+# Auto-start MCP server with ddev start
+autostart: true
