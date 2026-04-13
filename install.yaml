@@ -1,0 +1,38 @@
+name: mcp
+
+pre_install_commands:
+  - |
+    mkdir -p .ddev/bin
+    OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+    ARCH=$(uname -m)
+    case "$ARCH" in
+      x86_64) ARCH="amd64" ;;
+      aarch64|arm64) ARCH="arm64" ;;
+    esac
+    VERSION="latest"
+    URL="https://github.com/dkd-dobberkau/ddev-addon-mcp/releases/${VERSION}/download/ddev-mcp-server_${OS}_${ARCH}"
+    echo "Downloading ddev-mcp-server for ${OS}/${ARCH}..."
+    curl -sSL "$URL" -o .ddev/bin/ddev-mcp-server
+    chmod +x .ddev/bin/ddev-mcp-server
+
+project_files:
+  - commands/host/mcp
+  - mcp-config.yaml.example
+
+post_install_commands:
+  - |
+    if [ ! -f .ddev/mcp-config.yaml ]; then
+      cp .ddev/mcp-config.yaml.example .ddev/mcp-config.yaml
+    fi
+    echo ""
+    echo "MCP add-on installed. Configure your AI agent with:"
+    echo '  "command": ".ddev/bin/ddev-mcp-server"'
+    echo ""
+    echo "Or use: ddev mcp serve"
+
+removal_commands:
+  - rm -f .ddev/bin/ddev-mcp-server
+  - rm -f .ddev/commands/host/mcp
+  - rm -f .ddev/mcp-config.yaml.example
+
+ddev_version_constraint: ">= v1.24.0"

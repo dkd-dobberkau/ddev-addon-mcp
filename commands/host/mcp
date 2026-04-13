@@ -1,0 +1,38 @@
+#!/bin/bash
+
+## Description: Manage the MCP server for AI agent integration
+## Usage: mcp [command]
+## Example: ddev mcp serve\nddev mcp status\nddev mcp config
+
+case "${1:-status}" in
+  serve)
+    exec .ddev/bin/ddev-mcp-server
+    ;;
+  status)
+    if [ -f .ddev/bin/ddev-mcp-server ]; then
+      echo "MCP server: installed"
+      .ddev/bin/ddev-mcp-server --version 2>/dev/null || true
+      echo ""
+      echo "Config: .ddev/mcp-config.yaml"
+      if [ -f .ddev/mcp-config.yaml ]; then
+        cat .ddev/mcp-config.yaml
+      else
+        echo "(no config found)"
+      fi
+    else
+      echo "MCP server: not installed"
+      echo "Run: ddev addon get ddev-addon-mcp"
+    fi
+    ;;
+  config)
+    ${EDITOR:-vi} .ddev/mcp-config.yaml
+    ;;
+  *)
+    echo "Usage: ddev mcp [serve|status|config]"
+    echo ""
+    echo "Commands:"
+    echo "  serve   Start MCP server (stdio mode)"
+    echo "  status  Show MCP installation and config status"
+    echo "  config  Edit MCP configuration"
+    ;;
+esac
