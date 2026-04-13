@@ -1,140 +1,140 @@
 ---
 name: ddev-mcp
-description: DDEV-Projekte über MCP Tools verwalten. Verwende wenn der User DDEV-Befehle braucht oder ein DDEV-Projekt (.ddev/ Verzeichnis) vorhanden ist. Nutzt die ddev-addon-mcp MCP Tools statt direkter CLI-Aufrufe.
+description: Manage DDEV projects via MCP tools. Use when the user needs DDEV commands or a DDEV project (.ddev/ directory) is present. Uses ddev-addon-mcp MCP tools instead of direct CLI calls.
 ---
 
 # DDEV MCP Skill
 
-Verwaltet DDEV-Entwicklungsumgebungen über die MCP Tools von ddev-addon-mcp. Bevorzuge MCP Tools gegenüber direkten `ddev` CLI-Aufrufen — sie liefern strukturierte Antworten und sind für Agenten optimiert.
+Manages DDEV development environments via the MCP tools provided by ddev-addon-mcp. Prefer MCP tools over direct `ddev` CLI calls — they return structured responses and are optimized for agents.
 
-## Voraussetzungen
+## Prerequisites
 
-Das DDEV MCP Add-on muss installiert sein. Prüfe ob die MCP Tools verfügbar sind:
+The DDEV MCP add-on must be installed. Check if the MCP tools are available:
 
-1. `.mcp.json` im Projekt muss `ddev-mcp-server` referenzieren
-2. Oder `.ddev/bin/ddev-mcp-server` muss existieren
+1. `.mcp.json` in the project must reference `ddev-mcp-server`
+2. Or `.ddev/bin/ddev-mcp-server` must exist
 
-Falls nicht installiert:
+If not installed:
 ```bash
 ddev addon get ddev-addon-mcp
 ```
 
-## Verfügbare MCP Tools
+## Available MCP Tools
 
-### Projekt-Lifecycle
+### Project Lifecycle
 
-| Tool | Wann verwenden |
-|------|----------------|
-| `ddev_start` | Projekt starten, Container hochfahren |
-| `ddev_stop` | Projekt stoppen |
-| `ddev_restart` | Nach Config-Änderungen in `.ddev/` |
-| `ddev_poweroff` | ALLE Projekte stoppen (confirm: true nötig!) |
+| Tool | When to use |
+|------|-------------|
+| `ddev_start` | Start a project, spin up containers |
+| `ddev_stop` | Stop a project |
+| `ddev_restart` | After config changes in `.ddev/` |
+| `ddev_poweroff` | Stop ALL projects (requires confirm: true!) |
 
-### Projekt-Informationen
+### Project Information
 
-| Tool | Wann verwenden |
-|------|----------------|
-| `ddev_list` | Überblick aller DDEV-Projekte, Status prüfen |
-| `ddev_describe` | Details: URLs, DB-Credentials, PHP-Version, Services |
+| Tool | When to use |
+|------|-------------|
+| `ddev_list` | Overview of all DDEV projects, check status |
+| `ddev_describe` | Details: URLs, DB credentials, PHP version, services |
 
-### Befehle ausführen
+### Command Execution
 
-| Tool | Wann verwenden |
-|------|----------------|
-| `ddev_exec` | Beliebige Befehle im Container (PHP, Node, etc.) |
-| `ddev_composer` | Composer-Befehle (require, update, install) |
+| Tool | When to use |
+|------|-------------|
+| `ddev_exec` | Run any command in the container (PHP, Node, etc.) |
+| `ddev_composer` | Composer commands (require, update, install) |
 
-### Datenbank
+### Database
 
-| Tool | Wann verwenden |
-|------|----------------|
-| `ddev_import_db` | SQL-Dump importieren (confirm: true nötig!) |
-| `ddev_export_db` | Datenbank exportieren |
-| `ddev_snapshot` | Snapshot erstellen oder wiederherstellen |
+| Tool | When to use |
+|------|-------------|
+| `ddev_import_db` | Import SQL dump (requires confirm: true!) |
+| `ddev_export_db` | Export database |
+| `ddev_snapshot` | Create or restore snapshots |
 
 ### Logs
 
-| Tool | Wann verwenden |
-|------|----------------|
-| `ddev_logs` | Logs von Web, DB oder anderen Services ansehen |
+| Tool | When to use |
+|------|-------------|
+| `ddev_logs` | View logs from web, db, or other services |
 
-### Tool-Packs (falls aktiviert in `.ddev/mcp-config.yaml`)
+### Tool-Packs (if enabled in `.ddev/mcp-config.yaml`)
 
 **Redis:**
-- `ddev_redis_cli` — Redis-Befehle ausführen
-- `ddev_redis_info` — Redis Server-Info
-- `ddev_redis_flush` — Redis leeren (confirm: true)
+- `ddev_redis_cli` — Execute redis-cli commands
+- `ddev_redis_info` — Redis server info
+- `ddev_redis_flush` — Flush Redis (requires confirm: true)
 
 **Solr:**
-- `ddev_solr_status` — Core-Status
-- `ddev_solr_reload` — Core neu laden
-- `ddev_solr_query` — Solr-Abfragen
+- `ddev_solr_status` — Core status
+- `ddev_solr_reload` — Reload a core
+- `ddev_solr_query` — Execute Solr queries
 
 **Mailhog:**
-- `ddev_mailhog_list` — Eingefangene E-Mails auflisten
-- `ddev_mailhog_search` — E-Mails durchsuchen
-- `ddev_mailhog_delete` — Alle E-Mails löschen (confirm: true)
+- `ddev_mailhog_list` — List captured emails
+- `ddev_mailhog_search` — Search emails
+- `ddev_mailhog_delete` — Delete all emails (requires confirm: true)
 
 ---
 
-## Typische Workflows
+## Common Workflows
 
-### Projekt starten und Status prüfen
+### Start a project and check status
 
-1. `ddev_start` mit `project: "projektname"` aufrufen
-2. `ddev_describe` für URLs und DB-Credentials
-3. URL im Browser öffnen oder dem User mitteilen
+1. Call `ddev_start` with `project: "projectname"`
+2. Call `ddev_describe` for URLs and DB credentials
+3. Open URL in browser or share with the user
 
-### TYPO3-Projekt: Cache leeren
+### TYPO3: Flush cache
 
 ```
 ddev_exec({ command: "vendor/bin/typo3 cache:flush" })
 ```
 
-### TYPO3-Projekt: Extension installieren
+### TYPO3: Install an extension
 
 ```
 ddev_composer({ command: "require typo3/cms-dashboard" })
 ddev_exec({ command: "vendor/bin/typo3 extension:setup" })
 ```
 
-### Laravel-Projekt: Migration ausführen
+### Laravel: Run migrations
 
 ```
 ddev_exec({ command: "php artisan migrate" })
 ```
 
-### WordPress: Plugin-Liste
+### WordPress: List plugins
 
 ```
 ddev_exec({ command: "wp plugin list" })
 ```
 
-### Datenbank sichern vor Änderungen
+### Back up database before changes
 
 ```
-ddev_snapshot({ name: "vor-migration" })
+ddev_snapshot({ name: "before-migration" })
 ```
 
-### Datenbank wiederherstellen
+### Restore database
 
 ```
-ddev_snapshot({ action: "restore", name: "vor-migration" })
+ddev_snapshot({ action: "restore", name: "before-migration" })
 ```
 
-### SQL-Dump importieren
+### Import SQL dump
 
 ```
 ddev_import_db({ file: "/path/to/dump.sql", confirm: true })
 ```
 
-### Logs prüfen bei Fehlern
+### Check logs for errors
 
 ```
 ddev_logs({ service: "web", tail: 100 })
 ```
 
-### Alle Projekte auflisten
+### List all projects
 
 ```
 ddev_list()
@@ -142,26 +142,26 @@ ddev_list()
 
 ---
 
-## Sicherheitsregeln
+## Safety Rules
 
-- **Immer `ddev_snapshot` erstellen** bevor destruktive Datenbank-Operationen durchgeführt werden
-- **`confirm: true`** ist erforderlich für: `ddev_poweroff`, `ddev_import_db`, `ddev_redis_flush`, `ddev_mailhog_delete`
-- **`ddev_poweroff` stoppt ALLE Projekte** — den User warnen bevor es ausgeführt wird
-- Bei `ddev_import_db` den User informieren, dass die bestehende Datenbank überschrieben wird
+- **Always create a `ddev_snapshot`** before destructive database operations
+- **`confirm: true`** is required for: `ddev_poweroff`, `ddev_import_db`, `ddev_redis_flush`, `ddev_mailhog_delete`
+- **`ddev_poweroff` stops ALL projects** — warn the user before executing
+- For `ddev_import_db`, inform the user that the existing database will be overwritten
 
-## Fehlerbehebung
+## Troubleshooting
 
-### Projekt startet nicht
-1. `ddev_logs({ service: "web" })` — Web-Container Logs prüfen
-2. `ddev_describe()` — Status und Config prüfen
-3. `ddev_restart()` — Neustart versuchen
+### Project won't start
+1. `ddev_logs({ service: "web" })` — Check web container logs
+2. `ddev_describe()` — Check status and config
+3. `ddev_restart()` — Try a restart
 
-### Docker nicht verfügbar
-Wenn MCP Tools mit "Docker" Fehlern antworten:
-- User auffordern Docker Desktop zu starten
-- Dann `ddev_start` erneut versuchen
+### Docker not available
+If MCP tools respond with "Docker" errors:
+- Ask the user to start Docker Desktop
+- Then retry `ddev_start`
 
-### Datenbank-Probleme
-1. `ddev_snapshot({ name: "debug-backup" })` — Sicherung erstellen
-2. `ddev_logs({ service: "db" })` — DB-Logs prüfen
-3. Falls nötig: `ddev_snapshot({ action: "restore", name: "letzte-gute-version" })`
+### Database issues
+1. `ddev_snapshot({ name: "debug-backup" })` — Create a backup
+2. `ddev_logs({ service: "db" })` — Check DB logs
+3. If needed: `ddev_snapshot({ action: "restore", name: "last-good-version" })`
